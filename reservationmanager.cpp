@@ -16,7 +16,7 @@ bool ReservationManager::createReservation(int studentId, std::string timestamp)
 
     newNode->next = head;
     head = newNode;
-
+    
     managedResource.currentBookings++;
     return true;
 }
@@ -71,9 +71,12 @@ void ReservationManager::displayActiveReservations() const {
     ReservationNode* curr = head;
     std::cout << "HEAD -> ";
     while (curr != nullptr) {
-        std::cout << "[ID: " << curr->data.reservationId
+        std::cout << "[ID: " << curr->data.reservationId 
                   << " | Student: " << curr->data.studentId << "] -> ";
         curr = curr->next;
     }
     std::cout << "NULL\n";
 }
+
+
+
