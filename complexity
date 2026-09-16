@@ -1,0 +1,6 @@
+
+Operation	Time Complexity	Space Complexity	Technical Justification
+Insertion (Create)	O(1)	O(1)	New nodes are inserted directly at the head (newNode->next = head; head = newNode). No list traversal is required regardless of how many reservations exist.
+Searching	O(n)	O(1)	In a singly linked list without direct indexing, finding a specific reservationId requires scanning sequentially node-by-node from head. Worst-case requires examining all n nodes.
+Removal (Cancel)	O(n)	O(1)	While updating pointers to delete a node takes O(1) time, finding the node to remove requires linear search (O(n)). The overall operation is dominated by search time: O(n)+O(1)=O(n).
+Traversal (Display)	O(n)	O(1)	Must visit every active ReservationNode sequentially from head to nullptr to print details.
