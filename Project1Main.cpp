@@ -35,10 +35,17 @@ void menu(){
 //End
 
 int main(){
-        //print header
-
-        //load from files
-
+        //Vars
+        //End
+        
+        //Print Header
+        header();
+        //End
+        
+        //Load From Files
+        
+        //End
+        
         //output menu
         return 0;
 }
