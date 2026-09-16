@@ -1,7 +1,13 @@
+//Include
 #include <iostream>
+//End
+
+//Headers
+        //Here for resource managment
 #include "resource.h"
 #include "resources.h"
-#include "accountsystem.h"
+        //End
+//End
 using namespace std;
 
 //Prints Header
@@ -10,7 +16,9 @@ void header(){
         "+-----------------------------------------------+\n"<<
         "|        Computer Science and Engieering        |\n"<<
         "|        CSCE 2110 - Computer Science __        |\n"<<
-        "|  Nathan Moody NJM 0184 NathanMoody@my.unt.edu |\n"<<
+        "|                                               |\n"<<
+        "|                                               |\n"<<
+        "|  Nathan Moody NJM0184 NathanMoody@my.unt.edu  |\n"<<
         "+-----------------------------------------------+\n\n";
 }
 //End
