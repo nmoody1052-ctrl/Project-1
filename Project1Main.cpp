@@ -27,3 +27,10 @@ void menu(){
 //End
 
 int main(){
+        //print header
+
+        //load from files
+
+        //output menu
+        return 0;
+}
