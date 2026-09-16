@@ -36,6 +36,9 @@ void menu(){
 
 int main(){
         //Vars
+        string sVar;
+        bool bVar;
+        resources res;
         //End
         
         //Print Header
