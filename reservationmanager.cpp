@@ -1,82 +1,184 @@
 #include "ReservationManager.h"
 #include <iostream>
 
-// --- INSERTION (Head Insertion) ---
-// Inserts new reservation at the front of the linked list
-bool ReservationManager::createReservation(int studentId, std::string timestamp) {
-    if (!managedResource.isAvailable()) {
-        std::cout << "Resource unavailable. Student " << studentId << " added to waitlist.\n";
-        waitlist.enqueue(studentId);
-        return false;
+// Constructor
+ReservationManager::ReservationManager()
+    : head(nullptr),
+      nextReservationId(1) {
+}
+
+// Destructor
+ReservationManager::~ReservationManager() {
+
+    ReservationNode* current = head;
+
+    while (current != nullptr) {
+
+        ReservationNode* next = current->next;
+
+        delete current;
+
+        current = next;
     }
 
-    // Create new node and attach it to the head
-    Reservation newRes(nextReservationId++, studentId, managedResource.resourceId, timestamp);
-    ReservationNode* newNode = new ReservationNode(newRes);
+    head = nullptr;
+}
 
+// =====================================================
+// CREATE / INSERT RESERVATION
+// =====================================================
+
+bool ReservationManager::createReservation(
+    int studentId,
+    int resourceId,
+    const std::string& timestamp
+) {
+
+    // Create reservation data
+    Reservation reservation(
+        nextReservationId,
+        studentId,
+        resourceId,
+        timestamp
+    );
+
+    // Create a new linked-list node
+    ReservationNode* newNode =
+        new ReservationNode(reservation);
+
+    // Insert at the HEAD
     newNode->next = head;
     head = newNode;
-    
-    managedResource.currentBookings++;
+
+    // Give the next reservation a new ID
+    nextReservationId++;
+
     return true;
 }
 
-// --- REMOVAL (Delete Node by ID) ---
-// Traverses linked list to find reservationId, updates pointers, and frees memory
-bool ReservationManager::cancelReservation(int reservationId) {
-    ReservationNode* curr = head;
-    ReservationNode* prev = nullptr;
+// =====================================================
+// DELETE / REMOVE RESERVATION
+// =====================================================
 
-    // Search/Traversal phase
-    while (curr != nullptr && curr->data.reservationId != reservationId) {
-        prev = curr;
-        curr = curr->next;
+bool ReservationManager::deleteReservation(
+    int reservationId
+) {
+
+    ReservationNode* current = head;
+    ReservationNode* previous = nullptr;
+
+    // Traverse until reservation is found
+    while (
+        current != nullptr &&
+        current->data.reservationId != reservationId
+    ) {
+        previous = current;
+        current = current->next;
     }
 
-    if (curr == nullptr) {
-        std::cout << "Error: Reservation #" << reservationId << " not found.\n";
+    // Reservation was not found
+    if (current == nullptr) {
         return false;
     }
 
-    // Removal phase (relinking pointers around 'curr')
-    if (prev == nullptr) {
-        head = curr->next; // Removing head node
-    } else {
-        prev->next = curr->next; // Bypass current node
+    // If deleting the HEAD node
+    if (previous == nullptr) {
+
+        head = current->next;
     }
 
-    // Push canceled data to dynamic stack for undo tracking
-    undoStack.push(curr->data);
-    delete curr;
-    managedResource.currentBookings--;
+    // If deleting a middle/end node
+    else {
+
+        previous->next = current->next;
+    }
+
+    // Free memory
+    delete current;
 
     return true;
 }
 
-// --- SEARCHING (Linear Search) ---
-// Traverses list sequentially starting from head pointer
-ReservationNode* ReservationManager::searchReservation(int reservationId) {
-    ReservationNode* curr = head;
-    while (curr != nullptr) {
-        if (curr->data.reservationId == reservationId) {
-            return curr; // Found target node
+// =====================================================
+// VALIDATE / SEARCH RESERVATION
+// =====================================================
+
+bool ReservationManager::validateReservation(
+    int reservationId
+) const {
+
+    ReservationNode* current = head;
+
+    // Traverse the linked list
+    while (current != nullptr) {
+
+        if (current->data.reservationId == reservationId) {
+            return true;
         }
-        curr = curr->next;
+
+        current = current->next;
     }
-    return nullptr; // Not found
+
+    return false;
 }
 
-// --- TRAVERSAL (Display Active Reservations) ---
-void ReservationManager::displayActiveReservations() const {
-    ReservationNode* curr = head;
-    std::cout << "HEAD -> ";
-    while (curr != nullptr) {
-        std::cout << "[ID: " << curr->data.reservationId 
-                  << " | Student: " << curr->data.studentId << "] -> ";
-        curr = curr->next;
+// =====================================================
+// FIND RESERVATION
+// =====================================================
+
+ReservationNode* ReservationManager::findReservation(
+    int reservationId
+) {
+
+    ReservationNode* current = head;
+
+    while (current != nullptr) {
+
+        if (current->data.reservationId == reservationId) {
+            return current;
+        }
+
+        current = current->next;
     }
-    std::cout << "NULL\n";
+
+    return nullptr;
 }
 
+// =====================================================
+// DISPLAY / TRAVERSE
+// =====================================================
 
+void ReservationManager::displayReservations() const {
 
+    ReservationNode* current = head;
+
+    std::cout << "\nActive Reservations:\n";
+
+    std::cout << "HEAD";
+
+    while (current != nullptr) {
+
+        std::cout
+            << " -> [Reservation ID: "
+            << current->data.reservationId
+            << " | Student ID: "
+            << current->data.studentId
+            << " | Resource ID: "
+            << current->data.resourceId
+            << " | Date: "
+            << current->data.timestamp
+            << "]";
+
+        current = current->next;
+    }
+
+    std::cout << " -> NULL\n";
+}
+
+// =====================================================
+// GET HEAD
+// =====================================================
+
+ReservationNode* ReservationManager::getHead() const {
+    return head;
+}
