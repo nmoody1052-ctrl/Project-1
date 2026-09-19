@@ -1,9 +1,20 @@
-#include "reservation.h"
+#include "Reservation.h"
 
-Reservation::Reservation(int resId, int sId, int rId, std::string time)
-    : reservationId(resId), studentId(sId), resourceId(rId), timestamp(time) {}
+Reservation::Reservation(
+    int reservationId,
+    int studentId,
+    int resourceId,
+    const std::string& timestamp
+)
+    : reservationId(reservationId),
+      studentId(studentId),
+      resourceId(resourceId),
+      timestamp(timestamp) {
+}
 
-ReservationNode::ReservationNode(const Reservation& res)
-    : data(res), next(nullptr) {}
-
-
+ReservationNode::ReservationNode(
+    const Reservation& reservation
+)
+    : data(reservation),
+      next(nullptr) {
+}
