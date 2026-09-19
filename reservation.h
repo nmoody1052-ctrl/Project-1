@@ -3,22 +3,27 @@
 
 #include <string>
 
-// Represents a single reservation record
+// Stores the information for ONE reservation
 struct Reservation {
     int reservationId;
     int studentId;
     int resourceId;
     std::string timestamp;
 
-    Reservation(int resId = 0, int sId = 0, int rId = 0, std::string time = "");
+    Reservation(
+        int reservationId = 0,
+        int studentId = 0,
+        int resourceId = 0,
+        const std::string& timestamp = ""
+    );
 };
 
-// Node structure for the Active Reservations Linked List
+// One node in the active-reservation linked list
 struct ReservationNode {
     Reservation data;
     ReservationNode* next;
 
-    ReservationNode(const Reservation& res);
+    explicit ReservationNode(const Reservation& reservation);
 };
 
 #endif
