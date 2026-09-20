@@ -40,6 +40,7 @@ int main(){
         string sVar;
         bool bVar;
         resources res;
+        resource inpRes;
         //End
         
         //Print Header
@@ -48,6 +49,7 @@ int main(){
         
         //Load From Files
         ifstream res("resources.txt");
+        
         //End
         
         //output menu
