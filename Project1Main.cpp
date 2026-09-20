@@ -1,5 +1,6 @@
 //Include
 #include <iostream>
+#include <fstream>
 //End
 
 //Headers
@@ -46,7 +47,7 @@ int main(){
         //End
         
         //Load From Files
-        
+        ifstream res("resources.txt");
         //End
         
         //output menu
