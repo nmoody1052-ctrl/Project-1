@@ -46,17 +46,20 @@ void menu(){
 
 int main(){
         //Vars
+			//Resources class
         Resources res;
         int lineNum = 0;
         string line;
 		string id, name, type, status;
 
-		int studId, resId;
+		int studId, revId;
 		string resIdStr, studIdStr, resName, resourceId, date;
 		ReservationList reservation;
 
 		bool bVar = true;
 		int inp;
+
+		int nextRevID = 0;
         //End
         
         //Print Header
@@ -74,11 +77,14 @@ int main(){
 	while(getline(fileRes, line)){
 		lineNum++;
 
+		//Remove Windows \r and skip blank lines
 		if(!line.empty() && line.back() == '\r') line.pop_back();
 		if(line.empty()) continue;
 
+		//Lets us split the line on '|'
 		stringstream ss(line);
 
+		//Split line on '|', skip line if a field is missing
 		if(!getline(ss, id, '|') ||
 		   !getline(ss, name, '|') ||
 		   !getline(ss, type, '|') ||
@@ -110,11 +116,15 @@ int main(){
 
 	while(getline(fileVations, line)){
 	lineNum++;
+
+	//Remove Windows \r and skip blank lines
 	if(!line.empty() && line.back() == '\r') line.pop_back();
 	if(line.empty()) continue;
 
+	//Lets us split the line on '|'
 	stringstream ss(line);
 
+	//Split line on '|', skip line if a field is missing
 	if(!getline(ss, resIdStr, '|') ||
 		!getline(ss, studIdStr, '|') ||
 		!getline(ss, resName, '|') ||
@@ -124,8 +134,9 @@ int main(){
 		continue;
 	}
 
+	//Convert IDs to numbers, skip line if not numbers
 	try{
-		resId = stoi(resIdStr);
+		revId = stoi(resIdStr);
 		studId = stoi(studIdStr);
 	}
 	catch(...){
@@ -133,11 +144,16 @@ int main(){
 		continue;
 	}
 
-	Reservation r(resId, studId, resourceId, resName, date);
+	//Track the highest ID for new reservations
+	if(revId > nextRevID) nextRevID = revId;
+
+	Reservation r(revId, studId, resourceId, resName, date);
 	reservation.insertReservation(r);
-	fileVations.close();
 	//End
 	}
+
+	fileVations.close();
+	cout << lineNum << " reservations loaded.\n\n";
 
     //Switch case for outputing menu
 	//Menu Loop
@@ -147,15 +163,62 @@ int main(){
 		//Switch-Case
 		switch(inp){
 			//List Resources
-			case 1:
+			case 1:{
 				res.PrintResources();
 				break;
+			}
 			//Insert Reservation NEED TO ADD WAITLIST FUNCTIONALITY
-			case 2:
+			case 2:{
+				cout<<"Enter Resource ID :";
+				cin>>id;
+
+				//Look up the resource
+				Resource* found = res.findResource(id);
+
+				//If resource is not found
+				if(found==nullptr){
+					cout<<"Resource not found\n\n";
+					break;
+				}
+
+				//If resource is unavailable (WAITLIST ADDING GOES HERE) 
+				if(!found->getAvail()){
+					cout<<"NEED WAITLIST FUNCTIONALITY\n\n";
+					break;
+				}
+
+				//Get reservation info
+				cout << "Enter student ID: ";
+				cin >> studId;
+				cin.ignore();                            
+				cout << "Enter student name: ";
+				getline(cin, name);
+				cout << "Enter date (MM/DD/YYYY): ";
+				cin >> date;
+
+				//Create it with the next ID and add to list
+				Reservation newRes(++nextRevID, studId, id, name, date);
+				reservation.insertReservation(newRes);
+				cout << "Reservation created.\n";
 				break;
-			//Remove Reservation 
-			case 3:
+			}
+			//Remove Reservation (NEED CANCELLATION STUFF HERE)
+			case 3:{
+				Reservation removed;
+
+				cout<<"Enter reservation ID to cancel :";
+				cin>>revId;
+
+				//If it is able to remove it does, cancellation stack goes here
+				if(reservation.removeReservation(revId,removed)){
+					cout<<"Canceled reservation"<< removed.reservationId<<"\n\n";
+				}
+				else{
+					cout<<"Reservation not found.\n\n";
+				}
+
 				break;
+			}
 			//Display Reservations
 			case 4:
 				reservation.displayReservations();
@@ -182,5 +245,3 @@ int main(){
 	//End
     return 0;
 }
-
-gi
