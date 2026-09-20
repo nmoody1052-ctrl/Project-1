@@ -1,6 +1,7 @@
 //Include
 #include <iostream>
 #include <fstream>
+#include <sstream>
 //End
 
 //Headers
@@ -37,20 +38,51 @@ void menu(){
 
 int main(){
         //Vars
-        string sVar;
-        bool bVar;
         Resources res;
-        Resource inpRes;
+        int lineNum = 0;
+        string line;
         //End
         
         //Print Header
         header();
         //End
         
-        //Load From Files
-        ifstream fileRes("resources.txt");
-        
-        //End
+	//Load From Files
+	ifstream fileRes("resources.txt");
+
+	if(!fileRes.is_open()){
+		cout << "Error: Unable to open resources.txt\n\n";
+		return 1;
+	}
+
+	while(getline(fileRes, line)){
+		lineNum++;
+
+		if(!line.empty() && line.back() == '\r') line.pop_back();
+		if(line.empty()) continue;
+
+		stringstream ss(line);
+		string id, name, type, status;
+
+		if(!getline(ss, id, '|') ||
+		   !getline(ss, name, '|') ||
+		   !getline(ss, type, '|') ||
+		   !getline(ss, status)){
+			cout << "Line " << lineNum << " skipped: missing field\n";
+			continue;
+		}
+
+		Resource r;
+		r.setID(id);
+		r.setName(name);
+		r.setType(type);
+		r.setAvail(status);
+		res.addResource(r);
+	}
+
+	fileRes.close();
+	cout << res.getCount() << " resources loaded.\n\n";
+	//End
         
         //output menu
         return 0;

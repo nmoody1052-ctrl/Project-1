@@ -48,5 +48,9 @@ using namespace std;
 		else if(newAvail=="Unavailable"){
 			available = false;
 		}
+		else{
+			available = false;
+			cout<<"Error: Availablilty automatically set to False\n";
+		}
 	}
         //End

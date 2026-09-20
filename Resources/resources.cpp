@@ -10,17 +10,17 @@ using namespace std;
         //End
 
        	//Add Resource
-	void Resources::addResource(Resource* newResource){
+	void Resources::addResource(const Resource& newResource){
 		resourcesV.push_back(newResource);
 		count++;
 	}
 	//End
 
 	//Find Resource
-	Resource* Resources::findResource(string id) const{
+	Resource* Resources::findResource(string id){
 		for(int i=0;i<count;i++){
-			if(resourcesV.at(i)->getID()==id){
-				return resourcesV[i];
+			if(resourcesV[i].getID()==id){
+				return &resourcesV[i];
 			}
 		}
 		return nullptr;
@@ -32,3 +32,4 @@ using namespace std;
 		return count;
 	}
 	//End
+
