@@ -7,6 +7,8 @@
         //Here for resource managment
 #include "resource.h"
 #include "resources.h"
+#include "reservation.h"
+#include "ReservationList.h"
         //End
 //End
 using namespace std;
@@ -47,13 +49,21 @@ int main(){
         Resources res;
         int lineNum = 0;
         string line;
+		string id, name, type, status;
+
+		int studId, resId;
+		string resIdStr, studIdStr, resName, resourceId, date;
+		ReservationList reservation;
+
+		bool bVar = true;
+		int inp;
         //End
         
         //Print Header
         header();
         //End
         
-	//Load From Files
+	//Load RESORUCES From Files
 	ifstream fileRes("resources.txt");
 
 	if(!fileRes.is_open()){
@@ -68,7 +78,6 @@ int main(){
 		if(line.empty()) continue;
 
 		stringstream ss(line);
-		string id, name, type, status;
 
 		if(!getline(ss, id, '|') ||
 		   !getline(ss, name, '|') ||
@@ -90,12 +99,47 @@ int main(){
 	cout << res.getCount() << " resources loaded.\n\n";
 	//End
 
+	lineNum = 0;
+
 	//Load Reservations From File
+	ifstream fileVations("reservations.txt");
+
+	if(!fileVations.is_open()){
+		cout << "Error: Unable to open reservations.txt\n\n";
+	}
+
+	while(getline(fileVations, line)){
+	lineNum++;
+	if(!line.empty() && line.back() == '\r') line.pop_back();
+	if(line.empty()) continue;
+
+	stringstream ss(line);
+
+	if(!getline(ss, resIdStr, '|') ||
+		!getline(ss, studIdStr, '|') ||
+		!getline(ss, resName, '|') ||
+		!getline(ss, resourceId, '|') ||
+		!getline(ss, date)){
+		cout << "Line " << lineNum << " skipped: missing field\n";
+		continue;
+	}
+
+	try{
+		resId = stoi(resIdStr);
+		studId = stoi(studIdStr);
+	}
+	catch(...){
+		cout << "Line " << lineNum << " skipped: bad number\n";
+		continue;
+	}
+
+	Reservation r(resId, studId, resourceId, resName, date);
+	reservation.insertReservation(r);
+	fileVations.close();
 	//End
+	}
 
     //Switch case for outputing menu
-	bool bVar = true;
-	int inp;
 	//Menu Loop
 	while(bVar){
 		menu();
@@ -106,7 +150,7 @@ int main(){
 			case 1:
 				res.PrintResources();
 				break;
-			//Insert Reservation
+			//Insert Reservation NEED TO ADD WAITLIST FUNCTIONALITY
 			case 2:
 				break;
 			//Remove Reservation 
@@ -114,6 +158,7 @@ int main(){
 				break;
 			//Display Reservations
 			case 4:
+				reservation.displayReservations();
 				break;
 			//Display Waitlist
 			case 5:
@@ -135,7 +180,7 @@ int main(){
 		//End
 	}
 	//End
-	//End
     return 0;
 }
 
+gi

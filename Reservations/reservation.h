@@ -7,10 +7,11 @@
 struct Reservation {
     int reservationId;
     int studentId;
-    int resourceId;
+    std::string resourceId;
+    std::string studentName;
     std::string timestamp;
 
-    Reservation(int resId = 0, int sId = 0, int rId = 0, std::string time = "");
+    Reservation(int resId = 0, int sId = 0, std::string rId = "", std::string name = "",std::string time = "");
 };
 
 // Node structure for the Active Reservations Linked List
