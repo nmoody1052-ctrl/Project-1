@@ -19,7 +19,7 @@ using namespace std;
 		void setID(const string newID);
 		void setName(const string newName);
 		void setType(const string newType);
-		void setAvail(bool newAvail);
+		void setAvail(string newAvail);
 		//End
 	private:
 		string id;
