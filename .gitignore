@@ -1,0 +1,3 @@
+*.gch        # any file ending in .gch
+project1     # a file with this exact name
+.vscode/     # an entire folder

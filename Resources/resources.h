@@ -25,6 +25,9 @@ using namespace std;
 			int getCount() const;
 			//End
 
+			//Print
+			void PrintResources() const;
+			//End
 	};
 
 #endif

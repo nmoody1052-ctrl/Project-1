@@ -83,7 +83,9 @@ int main(){
 	fileRes.close();
 	cout << res.getCount() << " resources loaded.\n\n";
 	//End
+
+	res.PrintResources();
         
-        //output menu
-        return 0;
+    //output menu
+    return 0;
 }

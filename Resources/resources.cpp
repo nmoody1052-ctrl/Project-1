@@ -33,3 +33,17 @@ using namespace std;
 	}
 	//End
 
+	//PrintResources
+	void Resources::PrintResources() const{
+		cout<<"Resources: \n";
+		for(int i=0;i<count;i++){
+			cout<<"Resource #"<<i+1
+			<<"ID: "<<resourcesV[i].getID()<<" | "
+			<<"Name: "<<resourcesV[i].getName()<<" | "
+			<<"Type: "<<resourcesV[i].getType()<<" | "
+			<<"Availability: "<<resourcesV[i].getAvail()<<" | "<<endl;
+		}
+		cout<<endl;
+	}
+	//End
+
