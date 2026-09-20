@@ -1,5 +1,6 @@
 //Include
 #include <iostream>
+#include <fstream>
 //End
 
 //Headers
@@ -39,6 +40,7 @@ int main(){
         string sVar;
         bool bVar;
         resources res;
+        resource inpRes;
         //End
         
         //Print Header
@@ -46,6 +48,7 @@ int main(){
         //End
         
         //Load From Files
+        ifstream res("resources.txt");
         
         //End
         

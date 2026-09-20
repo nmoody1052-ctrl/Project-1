@@ -41,7 +41,12 @@ using namespace std;
 		typ = newType;
 	}
 
-	void Resource::setAvail(bool newAvail){
-		available = newAvail;
+	void Resource::setAvail(string newAvail){
+		if(newAvail=="Available"){
+			available = true;
+		}
+		else if(newAvail=="Unavailable"){
+			available = false;
+		}
 	}
         //End
