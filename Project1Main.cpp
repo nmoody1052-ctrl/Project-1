@@ -39,8 +39,8 @@ int main(){
         //Vars
         string sVar;
         bool bVar;
-        resources res;
-        resource inpRes;
+        Resources res;
+        Resource inpRes;
         //End
         
         //Print Header
@@ -48,7 +48,7 @@ int main(){
         //End
         
         //Load From Files
-        ifstream res("resources.txt");
+        ifstream fileRes("resources.txt");
         
         //End
         
