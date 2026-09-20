@@ -6,7 +6,7 @@
 using namespace std;
 	class Resources{
 		private:
-			vector<Resource*> resourcesV;
+			vector<Resource> resourcesV;
 			int count;
 		public:
 			//Contructor
@@ -14,11 +14,11 @@ using namespace std;
 			//End
 
 			//Add Resource
-			void addResource(Resource* newResource);
+			void addResource(const Resource& newResource);
 			//End
 
 			//Find Resource
-			Resource* findResource(string id) const;
+			Resource* findResource(string id);
 			//End
 
 			//Getter
