@@ -24,7 +24,7 @@ void header(){
         "|        CSCE 2110 - Computer Science __        |\n"<<
         "|                                               |\n"<<
         "|                                               |\n"<<
-        "|  										  	|\n"<<
+        "|    |\n"<<
         "+-----------------------------------------------+\n\n";
 }
 //End
@@ -61,29 +61,17 @@ int readChoice(){
 }
 //End
 
-int main(){
-        //Vars
-        Resources res;
-        ReservationManager manager;
-        //End
-
-        //Print Header
-        header();
-        //End
-
-        //Load resources from the pipe-delimited data file.
-        ifstream resourceFile("resources.txt");
+//Loads Resource records from a pipe-delimited file: ID|Name|Type|Availability
+void loadResources(Resources& res, const string& path){
+        ifstream resourceFile(path);
         if (!resourceFile.is_open()) {
-                cerr << "Unable to open resources.txt\n";
-                return 1;
+                cerr << "Unable to open " << path << "\n";
+                return;
         }
 
         string line;
         while (getline(resourceFile, line)) {
-                string id;
-                string name;
-                string type;
-                string availability;
+                string id, name, type, availability;
                 stringstream row(line);
                 if (getline(row, id, '|') && getline(row, name, '|') &&
                     getline(row, type, '|') && getline(row, availability)) {
@@ -95,8 +83,55 @@ int main(){
                         res.addResource(resource);
                 }
         }
+}
+//End
 
+//Loads existing Reservation records from a pipe-delimited file:
+//ReservationID|StudentID|StudentName|ResourceID|Date
+void loadReservations(ReservationManager& manager, const string& path){
+        ifstream reservationFile(path);
+        if (!reservationFile.is_open()) {
+                cerr << "Unable to open " << path << "\n";
+                return;
+        }
+
+        string line;
+        while (getline(reservationFile, line)) {
+                string reservationIdStr, studentIdStr, studentName, resourceId, timestamp;
+                stringstream row(line);
+                if (getline(row, reservationIdStr, '|') && getline(row, studentIdStr, '|') &&
+                    getline(row, studentName, '|') && getline(row, resourceId, '|') &&
+                    getline(row, timestamp)) {
+                        try {
+                                int reservationId = stoi(reservationIdStr);
+                                int studentId = stoi(studentIdStr);
+                                Reservation reservation(reservationId, studentId, studentName,
+                                                         resourceId, timestamp);
+                                manager.loadExistingReservation(reservation);
+                        } catch (...) {
+                                cerr << "Skipping malformed reservation line: " << line << "\n";
+                        }
+                }
+        }
+}
+//End
+
+int main(){
+        //Vars
+        Resources res;
+        ReservationManager manager;
+        //End
+
+        //Print Header
+        header();
+        //End
+
+        //Load starting data
+        loadResources(res, "resources.txt");
         cout << "Loaded " << res.getCount() << " resources.\n";
+
+        loadReservations(manager, "reservations.txt");
+        //End
 
         //Menu loop
         bool running = true;
@@ -110,11 +145,13 @@ int main(){
                                 break;
                         }
                         case 2: {
-                                string resourceId, studentIdStr, timestamp;
+                                string resourceId, studentIdStr, studentName, timestamp;
                                 cout << "Resource ID: ";
                                 getline(cin, resourceId);
                                 cout << "Student ID: ";
                                 getline(cin, studentIdStr);
+                                cout << "Student Name: ";
+                                getline(cin, studentName);
                                 cout << "Date/timestamp: ";
                                 getline(cin, timestamp);
 
@@ -132,15 +169,7 @@ int main(){
                                         break;
                                 }
 
-                                // Using the resource's own numeric position in the ID as the reservation's resourceId key.
-                                int numericResourceId = 0;
-                                try {
-                                        numericResourceId = stoi(resourceId);
-                                } catch (...) {
-                                        numericResourceId = static_cast<int>(res.getCount());
-                                }
-
-                                bool created = manager.createReservation(numericResourceId, studentId,
+                                bool created = manager.createReservation(resourceId, studentId, studentName,
                                                                           timestamp, resource->getAvail());
                                 if (created) {
                                         resource->setAvail(false);
@@ -166,14 +195,7 @@ int main(){
                                         cout << "No resource found with ID " << resourceId << ".\n";
                                         break;
                                 }
-                                int numericResourceId = 0;
-                                try {
-                                        numericResourceId = stoi(resourceId);
-                                } catch (...) {
-                                        numericResourceId = static_cast<int>(res.getCount());
-                                }
-                                bool promoted = manager.processNextWaitingRequest(numericResourceId,
-                                                                                   resource->getAvail());
+                                bool promoted = manager.processNextWaitingRequest(resourceId, resource->getAvail());
                                 if (promoted) {
                                         resource->setAvail(false);
                                 }
@@ -200,7 +222,8 @@ int main(){
                                 } else {
                                         cout << "Reservation #" << found->data.reservationId
                                              << " | Student: " << found->data.studentId
-                                             << " | Resource: R" << found->data.resourceId
+                                             << " (" << found->data.studentName << ")"
+                                             << " | Resource: " << found->data.resourceId
                                              << " | Date: " << found->data.timestamp << "\n";
                                 }
                                 break;
