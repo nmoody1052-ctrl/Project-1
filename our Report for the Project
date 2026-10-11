@@ -1,0 +1,7 @@
+Project Report
+For this project, we developed a C++ reservation management system. The main purpose of the project was to practice data structures and organize a larger C++ program using multiple files.
+We created a reservation system that allows reservations to be added, removed, searched, and displayed. A linked list was used to manage the reservations. We also created a waiting list using a queue, which follows the FIFO method, so the person who joins first is handled first. A stack was used fr the cancellation and undo process, following the LIFO method.
+The project was divided into header files and source files to keep the code organized. We worked with files such as Reservation.h, ReservationManager.h, their corresponding .cpp files, Resource.h, and main.cpp. The files work together as one project, so the program can be compiled together instead of running each file separately.
+We also looked at the time complexity of the main operations, including adding, searching, removing, and managing the waiting list. This helped us understand how the program performs as the amount of data increases.
+Finally, we organized the project fo submission with the source code, header files, README, complexity analysis, GitHub repository, and group contribution report. Overall, the project gave us practice with C++ programming, classes, pointers, linked lists, queues, s
+
