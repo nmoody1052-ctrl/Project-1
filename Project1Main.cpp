@@ -1,14 +1,17 @@
+//Include
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <limits>
 //End
 
 //Headers
         //Here for resource managment
 #include "resource.h"
 #include "resources.h"
-#include "reservation.h"
-#include "ReservationList.h"
+        //End
+        //Here for reservation managment
+#include "ReservationManager.h"
         //End
 //End
 using namespace std;
@@ -17,11 +20,11 @@ using namespace std;
 void header(){
         cout<<
         "+-----------------------------------------------+\n"<<
-        "|        Computer Science and Engineering       |\n"<<
+        "|        Computer Science and Engieering        |\n"<<
         "|        CSCE 2110 - Computer Science __        |\n"<<
         "|                                               |\n"<<
         "|                                               |\n"<<
-        "|  Nathan Moody NJM0184 NathanMoody@my.unt.edu  |\n"<<
+        "|    |\n"<<
         "+-----------------------------------------------+\n\n";
 }
 //End
@@ -30,218 +33,213 @@ void header(){
 void menu(){
         cout<<
         "*********************** Menu **********************\n"<<
-        "| 1. List Resources                                |\n"<<
-		"| 2. Insert Reservation                            |\n"<<
-		"| 3. Remove Reservation                            |\n"<<
-		"| 4. Display Reservations                          |\n"<<
-		"| 5. Display Waitlist                              |\n"<<
-		"| 6. Restore Cancelations                          |\n"<<
-		"| 7. Dispaly Cancelations                          |\n"<<
-		"| 8. Exit                                          |\n"<<
+        "| 1. Display all resources                        |\n"<<
+        "| 2. Create a reservation                          |\n"<<
+        "| 3. Cancel a reservation                          |\n"<<
+        "| 4. Restore last cancelled reservation            |\n"<<
+        "| 5. Process next waiting request for a resource   |\n"<<
+        "| 6. Display active reservations                  |\n"<<
+        "| 7. Display waiting list                          |\n"<<
+        "| 8. Display cancellation history                  |\n"<<
+        "| 9. Search reservation by ID                      |\n"<<
+        "| 0. Exit                                          |\n"<<
         "***************************************************\n"<<
         ">> ";
+}
+//End
 
+//Reads a menu choice safely, re-prompting on bad input.
+int readChoice(){
+        int choice;
+        while(!(cin >> choice)){
+                cin.clear();
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                cout << "Invalid input. Enter a number: ";
+        }
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        return choice;
+}
+//End
+
+//Loads Resource records from a pipe-delimited file: ID|Name|Type|Availability
+void loadResources(Resources& res, const string& path){
+        ifstream resourceFile(path);
+        if (!resourceFile.is_open()) {
+                cerr << "Unable to open " << path << "\n";
+                return;
+        }
+
+        string line;
+        while (getline(resourceFile, line)) {
+                string id, name, type, availability;
+                stringstream row(line);
+                if (getline(row, id, '|') && getline(row, name, '|') &&
+                    getline(row, type, '|') && getline(row, availability)) {
+                        Resource* resource = new Resource();
+                        resource->setID(id);
+                        resource->setName(name);
+                        resource->setType(type);
+                        resource->setAvail(availability == "Available");
+                        res.addResource(resource);
+                }
+        }
+}
+//End
+
+//Loads existing Reservation records from a pipe-delimited file:
+//ReservationID|StudentID|StudentName|ResourceID|Date
+void loadReservations(ReservationManager& manager, const string& path){
+        ifstream reservationFile(path);
+        if (!reservationFile.is_open()) {
+                cerr << "Unable to open " << path << "\n";
+                return;
+        }
+
+        string line;
+        while (getline(reservationFile, line)) {
+                string reservationIdStr, studentIdStr, studentName, resourceId, timestamp;
+                stringstream row(line);
+                if (getline(row, reservationIdStr, '|') && getline(row, studentIdStr, '|') &&
+                    getline(row, studentName, '|') && getline(row, resourceId, '|') &&
+                    getline(row, timestamp)) {
+                        try {
+                                int reservationId = stoi(reservationIdStr);
+                                int studentId = stoi(studentIdStr);
+                                Reservation reservation(reservationId, studentId, studentName,
+                                                         resourceId, timestamp);
+                                manager.loadExistingReservation(reservation);
+                        } catch (...) {
+                                cerr << "Skipping malformed reservation line: " << line << "\n";
+                        }
+                }
+        }
 }
 //End
 
 int main(){
         //Vars
-			//Resources class
         Resources res;
-        int lineNum = 0;
-        string line;
-		string id, name, type, status;
-
-		int studId, revId;
-		string resIdStr, studIdStr, resName, resourceId, date;
-		ReservationList reservation;
-
-		bool bVar = true;
-		int inp;
-
-		int nextRevID = 0;
+        ReservationManager manager;
         //End
-        
+
         //Print Header
         header();
         //End
-        
-	//Load RESORUCES From Files
-	ifstream fileRes("resources.txt");
 
-	if(!fileRes.is_open()){
-		cout << "Error: Unable to open resources.txt\n\n";
-		return 1;
-	}
+        //Load starting data
+        loadResources(res, "resources.txt");
+        cout << "Loaded " << res.getCount() << " resources.\n";
 
-	while(getline(fileRes, line)){
-		lineNum++;
+        loadReservations(manager, "reservations.txt");
+        //End
 
-		//Remove Windows \r and skip blank lines
-		if(!line.empty() && line.back() == '\r') line.pop_back();
-		if(line.empty()) continue;
+        //Menu loop
+        bool running = true;
+        while (running) {
+                menu();
+                int choice = readChoice();
 
-		//Lets us split the line on '|'
-		stringstream ss(line);
+                switch (choice) {
+                        case 1: {
+                                res.displayAll();
+                                break;
+                        }
+                        case 2: {
+                                string resourceId, studentIdStr, studentName, timestamp;
+                                cout << "Resource ID: ";
+                                getline(cin, resourceId);
+                                cout << "Student ID: ";
+                                getline(cin, studentIdStr);
+                                cout << "Student Name: ";
+                                getline(cin, studentName);
+                                cout << "Date/timestamp: ";
+                                getline(cin, timestamp);
 
-		//Split line on '|', skip line if a field is missing
-		if(!getline(ss, id, '|') ||
-		   !getline(ss, name, '|') ||
-		   !getline(ss, type, '|') ||
-		   !getline(ss, status)){
-			cout << "Line " << lineNum << " skipped: missing field\n";
-			continue;
-		}
+                                Resource* resource = res.findResource(resourceId);
+                                if (resource == nullptr) {
+                                        cout << "No resource found with ID " << resourceId << ".\n";
+                                        break;
+                                }
 
-		Resource r;
-		r.setID(id);
-		r.setName(name);
-		r.setType(type);
-		r.setAvail(status);
-		res.addResource(r);
-	}
+                                int studentId = 0;
+                                try {
+                                        studentId = stoi(studentIdStr);
+                                } catch (...) {
+                                        cout << "Invalid student ID.\n";
+                                        break;
+                                }
 
-	fileRes.close();
-	cout << res.getCount() << " resources loaded.\n\n";
-	//End
+                                bool created = manager.createReservation(resourceId, studentId, studentName,
+                                                                          timestamp, resource->getAvail());
+                                if (created) {
+                                        resource->setAvail(false);
+                                }
+                                break;
+                        }
+                        case 3: {
+                                cout << "Reservation ID to cancel: ";
+                                int reservationId = readChoice();
+                                manager.cancelReservation(reservationId);
+                                break;
+                        }
+                        case 4: {
+                                manager.restoreLastCancelled();
+                                break;
+                        }
+                        case 5: {
+                                string resourceId;
+                                cout << "Resource ID: ";
+                                getline(cin, resourceId);
+                                Resource* resource = res.findResource(resourceId);
+                                if (resource == nullptr) {
+                                        cout << "No resource found with ID " << resourceId << ".\n";
+                                        break;
+                                }
+                                bool promoted = manager.processNextWaitingRequest(resourceId, resource->getAvail());
+                                if (promoted) {
+                                        resource->setAvail(false);
+                                }
+                                break;
+                        }
+                        case 6: {
+                                manager.displayActiveReservations();
+                                break;
+                        }
+                        case 7: {
+                                manager.displayWaitingList();
+                                break;
+                        }
+                        case 8: {
+                                manager.displayCancellationHistory();
+                                break;
+                        }
+                        case 9: {
+                                cout << "Reservation ID to search: ";
+                                int reservationId = readChoice();
+                                ReservationNode* found = manager.searchReservation(reservationId);
+                                if (found == nullptr) {
+                                        cout << "Reservation #" << reservationId << " not found.\n";
+                                } else {
+                                        cout << "Reservation #" << found->data.reservationId
+                                             << " | Student: " << found->data.studentId
+                                             << " (" << found->data.studentName << ")"
+                                             << " | Resource: " << found->data.resourceId
+                                             << " | Date: " << found->data.timestamp << "\n";
+                                }
+                                break;
+                        }
+                        case 0: {
+                                running = false;
+                                cout << "Goodbye.\n";
+                                break;
+                        }
+                        default: {
+                                cout << "Invalid choice. Pick a number from the menu.\n";
+                                break;
+                        }
+                }
+        }
+        //End
 
-	lineNum = 0;
-
-	//Load Reservations From File
-	ifstream fileVations("reservations.txt");
-
-	if(!fileVations.is_open()){
-		cout << "Error: Unable to open reservations.txt\n\n";
-	}
-
-	while(getline(fileVations, line)){
-	lineNum++;
-
-	//Remove Windows \r and skip blank lines
-	if(!line.empty() && line.back() == '\r') line.pop_back();
-	if(line.empty()) continue;
-
-	//Lets us split the line on '|'
-	stringstream ss(line);
-
-	//Split line on '|', skip line if a field is missing
-	if(!getline(ss, resIdStr, '|') ||
-		!getline(ss, studIdStr, '|') ||
-		!getline(ss, resName, '|') ||
-		!getline(ss, resourceId, '|') ||
-		!getline(ss, date)){
-		cout << "Line " << lineNum << " skipped: missing field\n";
-		continue;
-	}
-
-	//Convert IDs to numbers, skip line if not numbers
-	try{
-		revId = stoi(resIdStr);
-		studId = stoi(studIdStr);
-	}
-	catch(...){
-		cout << "Line " << lineNum << " skipped: bad number\n";
-		continue;
-	}
-
-	//Track the highest ID for new reservations
-	if(revId > nextRevID) nextRevID = revId;
-
-	Reservation r(revId, studId, resourceId, resName, date);
-	reservation.insertReservation(r);
-	//End
-	}
-
-	fileVations.close();
-	cout << lineNum << " reservations loaded.\n\n";
-
-    //Switch case for outputing menu
-	//Menu Loop
-	while(bVar){
-		menu();
-		cin>>inp;
-		//Switch-Case
-		switch(inp){
-			//List Resources
-			case 1:{
-				res.PrintResources();
-				break;
-			}
-			//Insert Reservation NEED TO ADD WAITLIST FUNCTIONALITY
-			case 2:{
-				cout<<"Enter Resource ID :";
-				cin>>id;
-
-				//Look up the resource
-				Resource* found = res.findResource(id);
-
-				//If resource is not found
-				if(found==nullptr){
-					cout<<"Resource not found\n\n";
-					break;
-				}
-
-				//If resource is unavailable (WAITLIST ADDING GOES HERE) 
-				if(!found->getAvail()){
-					cout<<"NEED WAITLIST FUNCTIONALITY\n\n";
-					break;
-				}
-
-				//Get reservation info
-				cout << "Enter student ID: ";
-				cin >> studId;
-				cin.ignore();                            
-				cout << "Enter student name: ";
-				getline(cin, name);
-				cout << "Enter date (MM/DD/YYYY): ";
-				cin >> date;
-
-				//Create it with the next ID and add to list
-				Reservation newRes(++nextRevID, studId, id, name, date);
-				reservation.insertReservation(newRes);
-				cout << "Reservation created.\n";
-				break;
-			}
-			//Remove Reservation (NEED CANCELLATION STUFF HERE)
-			case 3:{
-				Reservation removed;
-
-				cout<<"Enter reservation ID to cancel :";
-				cin>>revId;
-
-				//If it is able to remove it does, cancellation stack goes here
-				if(reservation.removeReservation(revId,removed)){
-					cout<<"Canceled reservation"<< removed.reservationId<<"\n\n";
-				}
-				else{
-					cout<<"Reservation not found.\n\n";
-				}
-
-				break;
-			}
-			//Display Reservations
-			case 4:
-				reservation.displayReservations();
-				break;
-			//Display Waitlist
-			case 5:
-				break;
-			//Restore Cancelations
-			case 6:
-				break;
-			//Dispaly Cancelations
-			case 7:
-				break;
-			//Exit
-			case 8:
-				cout<<"Thank you for using this program. Goodbye!\n";
-                        	exit(0);
-            default:
-				cout<<"Error: Invalid selection. Enter a value between 1-8.\n\n";
-                        	break;
-		}
-		//End
-	}
-	//End
-    return 0;
+        return 0;
 }
