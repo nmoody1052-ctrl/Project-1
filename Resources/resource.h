@@ -13,7 +13,7 @@ using namespace std;
 		string getName() const;
 		string getType() const;
 		bool getAvail() const;
-		int getCount() const;
+		int getsCount() const;
 		int getWaitCount() const;
 		//End
 
@@ -24,6 +24,9 @@ using namespace std;
 		void setAvail(string newAvail);
 		void incremCount();
 		void incremWaitCount();
+
+		void decremCount();
+		void decremWaitCount();
 		//End
 
 	private:

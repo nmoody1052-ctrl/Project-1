@@ -26,10 +26,10 @@ using namespace std;
 	}
 
 	bool Resource::getAvail() const{
-		return available ;
+		return available;
 	}
 
-	int Resource::getCount() const{
+	int Resource::getsCount() const{
 		return reservationCount;
 	}
 
@@ -70,4 +70,12 @@ using namespace std;
 
 	void Resource::incremWaitCount(){
 		waitlistCount+=1;
+	}
+
+	void Resource::decremCount(){
+		reservationCount-=1;
+	}
+
+	void Resource::decremWaitCount(){
+		waitlistCount-=1;
 	}

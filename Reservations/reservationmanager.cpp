@@ -1,8 +1,10 @@
 #include "ReservationManager.h"
+#include "resource.h"
+#include "resources.h"
 #include <iostream>
 
-ReservationManager::ReservationManager()
-    : nextReservationId(1), head(nullptr) {}
+ReservationManager::ReservationManager(Resources& resources)
+    : nextReservationId(1), head(nullptr), res(resources) {}
 
 ReservationManager::~ReservationManager() {
     while (head != nullptr) {
@@ -74,6 +76,13 @@ bool ReservationManager::cancelReservation(int reservationId) {
         prev->next = curr->next; // Bypass current node
     }
 
+    string resourceId = curr->data.resourceId;
+	Resource* resource = res.findResource(resourceId);
+	if(resource != nullptr){
+		resource->setAvail("Available");
+		resource->decremCount();   //if you're tracking a reservation count per resource
+	}
+
     undoStack.push(curr->data);
     delete curr;
     std::cout << "Reservation #" << reservationId << " cancelled.\n";
@@ -87,6 +96,14 @@ bool ReservationManager::restoreLastCancelled() {
     }
 
     Reservation reservation = undoStack.top();
+
+    string resourceId = reservation.resourceId;
+	Resource* resource = res.findResource(resourceId);
+    if(resource != nullptr){
+	    resource->setAvail("Unavailable");
+	    resource->incremCount();
+    }
+
     undoStack.pop();
     insertActiveReservation(reservation);
     std::cout << "Reservation #" << reservation.reservationId << " restored.\n";
@@ -107,7 +124,6 @@ ReservationNode* ReservationManager::searchReservation(int reservationId) const 
 void ReservationManager::displayActiveReservations() const {
     int resCount = 0;
     const ReservationNode* curr = head;
-    std::cout << "\nActive reservations\n";
     if (curr == nullptr) {
         std::cout << "None\n";
         return;
