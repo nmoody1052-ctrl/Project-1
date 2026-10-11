@@ -28,6 +28,14 @@ using namespace std;
 			//Print
 			void PrintResources() const;
 			//End
+
+			//Merge Sort By Name
+			void sortByName();
+			//End
+
+			//Merge Sort By Popularity (number of reservations)
+			void sortByPopularity();
+			//End
 	};
 
 #endif

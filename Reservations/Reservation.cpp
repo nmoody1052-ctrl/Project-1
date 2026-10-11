@@ -7,3 +7,4 @@ Reservation::Reservation(int resId, int sId, std::string sName,
 
 ReservationNode::ReservationNode(const Reservation& res)
     : data(res), next(nullptr) {}
+

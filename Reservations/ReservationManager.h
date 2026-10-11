@@ -1,6 +1,8 @@
 #ifndef RESERVATION_MANAGER_H
 #define RESERVATION_MANAGER_H
 
+#include "resource.h"
+#include "resources.h"
 #include "reservation.h"
 #include <queue>
 #include <stack>
@@ -8,7 +10,7 @@
 
 class ReservationManager {
 public:
-    ReservationManager();
+    ReservationManager(Resources& resources);
     ~ReservationManager();
 
     bool createReservation(const std::string& resourceId, int studentId,
@@ -39,6 +41,7 @@ private:
     ReservationNode* head;
     std::queue<WaitingRequest> waitlist;
     std::stack<Reservation> undoStack;
+    Resources& res;
 
     void insertActiveReservation(const Reservation& reservation);
 };

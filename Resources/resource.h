@@ -13,6 +13,8 @@ using namespace std;
 		string getName() const;
 		string getType() const;
 		bool getAvail() const;
+		int getsCount() const;
+		int getWaitCount() const;
 		//End
 
 		//Setters
@@ -20,12 +22,20 @@ using namespace std;
 		void setName(const string newName);
 		void setType(const string newType);
 		void setAvail(string newAvail);
+		void incremCount();
+		void incremWaitCount();
+
+		void decremCount();
+		void decremWaitCount();
 		//End
+
 	private:
 		string id;
 		string name;
 		string typ;
 		bool available;
+		int reservationCount;
+		int waitlistCount;
 	};
 
 

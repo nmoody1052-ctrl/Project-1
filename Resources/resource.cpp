@@ -2,42 +2,52 @@
 #include "resource.h"
 using namespace std;
 	//Default Constructor
-        Resource::Resource(){
+    Resource::Resource(){
 		id = "";
 		name = "";
 		typ = "";
 		available = 0;
+		reservationCount = 0;
+		waitlistCount = 0;
 	}
-        //End
+     //End
 
-        //Getters
-        string Resource::getID() const{
+    //Getters
+    string Resource::getID() const{
 		return id;
 	}
 
-        string Resource::getName() const{
+    string Resource::getName() const{
 		return name;
 	}
 
-        string Resource::getType() const{
+    string Resource::getType() const{
 		return typ;
 	}
 
 	bool Resource::getAvail() const{
-		return available ;
+		return available;
 	}
-        //End
 
-        //Setters
-        void Resource::setID(const string newID){
+	int Resource::getsCount() const{
+		return reservationCount;
+	}
+
+	int Resource::getWaitCount() const{
+		return waitlistCount;
+	}
+    //End
+
+    //Setters
+    void Resource::setID(const string newID){
 		id = newID;
 	}
 
-        void Resource::setName(const string newName){
+    void Resource::setName(const string newName){
 		name = newName;
 	}
 
-        void Resource::setType(const string newType){
+    void Resource::setType(const string newType){
 		typ = newType;
 	}
 
@@ -53,4 +63,19 @@ using namespace std;
 			cout<<"Error: Availablilty automatically set to False\n";
 		}
 	}
-        //End
+
+	void Resource::incremCount(){
+		reservationCount+=1;
+	}
+
+	void Resource::incremWaitCount(){
+		waitlistCount+=1;
+	}
+
+	void Resource::decremCount(){
+		reservationCount-=1;
+	}
+
+	void Resource::decremWaitCount(){
+		waitlistCount-=1;
+	}
