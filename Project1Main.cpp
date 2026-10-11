@@ -24,7 +24,7 @@ void header(){
         "|        CSCE 2110 - Computer Science __        |\n"<<
         "|                                               |\n"<<
         "|                                               |\n"<<
-        "|    |\n"<<
+        "|                                               |\n"<<
         "+-----------------------------------------------+\n\n";
 }
 //End
@@ -33,15 +33,16 @@ void header(){
 void menu(){
         cout<<
         "*********************** Menu **********************\n"<<
-        "| 1. Display all resources                        |\n"<<
+        "| 1. Display all resources                         |\n"<<
         "| 2. Create a reservation                          |\n"<<
         "| 3. Cancel a reservation                          |\n"<<
         "| 4. Restore last cancelled reservation            |\n"<<
         "| 5. Process next waiting request for a resource   |\n"<<
-        "| 6. Display active reservations                  |\n"<<
+        "| 6. Display active reservations                   |\n"<<
         "| 7. Display waiting list                          |\n"<<
         "| 8. Display cancellation history                  |\n"<<
         "| 9. Search reservation by ID                      |\n"<<
+        "| 10. Generate Report                              |\n"<<
         "| 0. Exit                                          |\n"<<
         "***************************************************\n"<<
         ">> ";
@@ -117,16 +118,27 @@ void loadReservations(ReservationManager& manager, const string& path){
 //End
 
 //Report Generation
-void reportGen(ReservationManager& manager){
+void reportGen(ReservationManager& manager, Resources res){
         //Displays All Active Reservations + How Many
         cout<<"Outputting Active Reservations\n\n";
         manager.displayActiveReservations();
         cout<<"End of first section\n\n";
         //End
 
-        //
+        //Prints all resources as well as popularity
+        cout<<"Start of printing all resources\n\n";
+        res.PrintResources();
+        cout<<"End of Printing all resourced\n\n";
+        //End
+
+        //Prints the resources sorted based on 
         
         //End
+
+        //Prints Waitlist
+        manager.displayWaitingList();
+        //End
+        return;
 }
 //End
 
@@ -154,10 +166,12 @@ int main(){
                 int choice = readChoice();
 
                 switch (choice) {
+                        //display resources
                         case 1: {
                                 res.PrintResources();
                                 break;
                         }
+                        //create Reservation
                         case 2: {
                                 string resourceId, studentIdStr, studentName, timestamp;
                                 cout << "Resource ID: ";
@@ -187,19 +201,26 @@ int main(){
                                                                           timestamp, resource->getAvail());
                                 if (created) {
                                         resource->setAvail("Unavailable");
+                                        resource->incremCount();
+                                }
+                                else{
+                                        resource->incremWaitCount();
                                 }
                                 break;
                         }
+                        //Cancel Reservation
                         case 3: {
                                 cout << "Reservation ID to cancel: ";
                                 int reservationId = readChoice();
                                 manager.cancelReservation(reservationId);
                                 break;
                         }
+                        //Restore Cancelled
                         case 4: {
                                 manager.restoreLastCancelled();
                                 break;
                         }
+                        //Determine Reservation availability
                         case 5: {
                                 string resourceId;
                                 cout << "Resource ID: ";
@@ -215,18 +236,22 @@ int main(){
                                 }
                                 break;
                         }
+                        //Show all active reservations
                         case 6: {
                                 manager.displayActiveReservations();
                                 break;
                         }
+                        //Show Waiting list
                         case 7: {
                                 manager.displayWaitingList();
                                 break;
                         }
+                        //Show cancelation history
                         case 8: {
                                 manager.displayCancellationHistory();
                                 break;
                         }
+                        //Search for reservation via ID
                         case 9: {
                                 cout << "Reservation ID to search: ";
                                 int reservationId = readChoice();
@@ -240,6 +265,10 @@ int main(){
                                              << " | Resource: " << found->data.resourceId
                                              << " | Date: " << found->data.timestamp << "\n";
                                 }
+                                break;
+                        }
+                        case 10: {
+                                reportGen(manager, res);
                                 break;
                         }
                         case 0: {

@@ -26,15 +26,18 @@ bool ReservationManager::createReservation(const std::string& resourceId, int st
         std::cout << "Invalid reservation. Resource ID, student ID, and date are required.\n";
         return false;
     }
+    
+    Reservation reservation(nextReservationId++, studentId, studentName, resourceId, timestamp);
+    
 
     if (!resourceAvailable) {
         waitlist.push({resourceId, studentId, studentName, timestamp});
         std::cout << "Resource unavailable. Student " << studentId
                   << " added to the waiting list.\n";
+        
         return false;
     }
 
-    Reservation reservation(nextReservationId++, studentId, studentName, resourceId, timestamp);
     insertActiveReservation(reservation);
     std::cout << "Reservation #" << reservation.reservationId << " created.\n";
     return true;

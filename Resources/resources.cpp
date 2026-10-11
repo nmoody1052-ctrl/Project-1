@@ -41,9 +41,16 @@ using namespace std;
 			<<"ID: "<<resourcesV[i].getID()<<" | "
 			<<"Name: "<<resourcesV[i].getName()<<" | "
 			<<"Type: "<<resourcesV[i].getType()<<" | "
-			<<"Availability: "<<resourcesV[i].getAvail()<<" | "<<endl;
+			<<"Availability: "<<resourcesV[i].getAvail()<<" | "
+			<<"Number of Reservations: "<<resourcesV[i].getCount()<<" | "
+			<<"Number of Waitlists: "<<resourcesV[i].getWaitCount()<<" | "
+			<<"Total Popularity (Reservations+Waitlists): "<<resourcesV[i].getWaitCount()+resourcesV[i].getCount()<<" | "
+			<<endl;
 		}
 		cout<<endl;
 	}
+	//End
+
+	//Sort
 	//End
 
