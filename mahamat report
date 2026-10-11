@@ -1,5 +1,4 @@
-# Individual Work Report
-
+My report :
 For my part of the project, I worked on the Reservation and the linked list for our Campus Resource Reservation System. My main job was to create the reservation information and make a linked list to store the active reservations. I also worked on testing my code, compiling it in VS Code, and using GitHub to save and manage my work.
 
 First, I worked on the Reservation class. I created the `Reservation` files, `Reservation.h` and `Reservation.cpp`. The reservation stores the important information about a reservation, such as the reservation ID, student ID, resource ID, and timestamp. I made the Reservation object so that each reservation can hold its own information.
@@ -16,4 +15,4 @@ For my coding work, I used VS Code. I opened the project in VS Code and worked w
 
 I also used GitHub to manage my work. I created and worked on a feature branch instead of making all my changes directly on the main branch. After making my changes, I checked the files with Git, added my changes, and made commits describing what I worked on. I pushed my branch to GitHub and used a pull request to merge my work into the main branch. This helped me understand how branches and commits are used when working on a group project.
 
-Overall, my main contribution to the project was the Reservation and active reservation linked list. I learned how to create a class, connect objects using nodes and pointers, insert and remove nodes, search through a linked list, and think about the time complexity of each operation. I also got more practice compiling C++ in VS Code and using GitHub branches, commits, and pull requests to manage my work.
+Overall, my main contribution to the project was the Reservation and active reservation linked list. I learned how to create a class, connect objects using nodes and pointers, insert and remove nodes, search through a linked list, and think about the time complexity of each operation. I also got more practice compiling C++ in VS Code and using GitHub branches, commits, and pull requests to manage my work. I also change it to quick sort.
