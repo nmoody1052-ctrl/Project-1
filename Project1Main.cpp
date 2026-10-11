@@ -75,11 +75,11 @@ void loadResources(Resources& res, const string& path){
                 stringstream row(line);
                 if (getline(row, id, '|') && getline(row, name, '|') &&
                     getline(row, type, '|') && getline(row, availability)) {
-                        Resource* resource = new Resource();
-                        resource->setID(id);
-                        resource->setName(name);
-                        resource->setType(type);
-                        resource->setAvail(availability == "Available");
+                        Resource resource;
+                        resource.setID(id);
+                        resource.setName(name);
+                        resource.setType(type);
+                        resource.setAvail(availability);
                         res.addResource(resource);
                 }
         }
@@ -116,6 +116,20 @@ void loadReservations(ReservationManager& manager, const string& path){
 }
 //End
 
+//Report Generation
+void reportGen(ReservationManager& manager){
+        //Displays All Active Reservations + How Many
+        cout<<"Outputting Active Reservations\n\n";
+        manager.displayActiveReservations();
+        cout<<"End of first section\n\n";
+        //End
+
+        //
+        
+        //End
+}
+//End
+
 int main(){
         //Vars
         Resources res;
@@ -141,7 +155,7 @@ int main(){
 
                 switch (choice) {
                         case 1: {
-                                res.displayAll();
+                                res.PrintResources();
                                 break;
                         }
                         case 2: {
@@ -172,7 +186,7 @@ int main(){
                                 bool created = manager.createReservation(resourceId, studentId, studentName,
                                                                           timestamp, resource->getAvail());
                                 if (created) {
-                                        resource->setAvail(false);
+                                        resource->setAvail("Unavailable");
                                 }
                                 break;
                         }
@@ -197,7 +211,7 @@ int main(){
                                 }
                                 bool promoted = manager.processNextWaitingRequest(resourceId, resource->getAvail());
                                 if (promoted) {
-                                        resource->setAvail(false);
+                                        resource->setAvail("Unavailable");
                                 }
                                 break;
                         }

@@ -102,6 +102,7 @@ ReservationNode* ReservationManager::searchReservation(int reservationId) const 
 }
 
 void ReservationManager::displayActiveReservations() const {
+    int resCount = 0;
     const ReservationNode* curr = head;
     std::cout << "\nActive reservations\n";
     if (curr == nullptr) {
@@ -114,8 +115,10 @@ void ReservationManager::displayActiveReservations() const {
                   << " (" << curr->data.studentName << ")"
                   << " | Resource: " << curr->data.resourceId
                   << " | Date: " << curr->data.timestamp << "\n";
+        resCount+=1;
         curr = curr->next;
     }
+    std::cout<<"\n"<<resCount<<" total reservations\n";
 }
 
 void ReservationManager::displayWaitingList() const {
